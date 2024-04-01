@@ -23,6 +23,8 @@ class ProjectController extends Controller
 
         $publication_filter = $request->query('publication_filter');
         $type_filter = $request->query('type_filter');
+        $tech_filter = $request->query('tech_filter');
+
         $query = Project::orderByDesc('updated_at')->orderByDesc('created_at');
 
         if($publication_filter){
@@ -34,11 +36,18 @@ class ProjectController extends Controller
             $query->whereTypeId($type_filter);
         }
 
+        if($tech_filter){
+            $query->whereHas('technologies', function($query) use ($tech_filter){
+                $query->where('technologies.id', $tech_filter);
+            });
+        }
+
         $projects = $query->paginate(10)->withQueryString();
 
         $types = Type::all();
+        $technologies = Technology::all();
         
-        return view('admin.projects.index', compact('projects', 'publication_filter', 'types', 'type_filter'));
+        return view('admin.projects.index', compact('projects', 'publication_filter', 'types', 'type_filter', 'technologies', 'tech_filter'));
     }
 
     /**

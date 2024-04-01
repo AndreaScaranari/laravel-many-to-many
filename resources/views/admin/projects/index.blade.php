@@ -10,20 +10,31 @@
             {{-- Pulsante crea nuovo --}}
             <a href="{{ route('admin.projects.create') }}" class="btn btn-success d-block">
                 <i class="fas fa-plus me-2"></i>Nuovo</a>
-            {{-- Filtro pubblicati --}}
+            {{-- Filtri --}}
             <form action="{{ route('admin.projects.index') }}" method="GET">
                 <div class="input-group">
-                    <select class="form-select" name="publication_filter">
-                        <option value="">Status</option>
-                        <option value="published" @if ($publication_filter === 'published') selected @endif>Pubblicati</option>
-                        <option value="drafts" @if ($publication_filter === 'drafts') selected @endif>Bozze</option>
-                    </select>
+                    {{-- filtro tipologia --}}
                     <select class="form-select" name="type_filter">
                         <option value="">Tipologie</option>
                         @foreach ($types as $type)
                             <option value="{{ $type->id }}" @if ($type_filter == $type->id) selected @endif>
                                 {{ $type->label }}</option>
                         @endforeach
+                    </select>
+                    {{-- filtro tecnologia --}}
+                    <select class="form-select" name="type_filter">
+                        <option value="">Linguaggi</option>
+                        @foreach ($technologies as $tech)
+                            <option value="{{ $tech->id }}" @if ($tech_filter == $tech->id) selected @endif>
+                                {{ $tech->label }}</option>
+                        @endforeach
+                    </select>
+
+                    {{-- filtro status --}}
+                    <select class="form-select" name="publication_filter">
+                        <option value="">Status</option>
+                        <option value="published" @if ($publication_filter === 'published') selected @endif>Pubblicati</option>
+                        <option value="drafts" @if ($publication_filter === 'drafts') selected @endif>Bozze</option>
                     </select>
                     <button class="btn btn-outline-secondary" type="submit">Filtra</button>
                 </div>
