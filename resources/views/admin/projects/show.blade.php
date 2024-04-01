@@ -23,6 +23,13 @@
             <strong>Creato il:</strong> {{ $project->getFormattedDate('created_at', 'd-m-Y H:i:s') }}
             <strong>Ultima modifica il:</strong> {{ $project->getFormattedDate('updated_at', 'd-m-Y H:i:s') }}
         </div>
+        <div>
+            @forelse($project->technologies as $tech)
+                <span class="badge rounded-pill text-bg-{{ $tech->color }}">{{ $tech->label }}</span>
+            @empty
+                N/A
+            @endforelse
+        </div>
     </div>
 
     <footer class="d-flex justify-content-between align-items-center">

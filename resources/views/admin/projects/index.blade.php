@@ -41,6 +41,7 @@
                 <th scope="col">Titolo</th>
                 <th scope="col">Slug</th>
                 <th scope="col">Tipologia</th>
+                <th scope="col">Linguaggi</th>
                 <th scope="col">Status</th>
                 <th scope="col">Creato il</th>
                 <th scope="col">Ultima modifica</th>
@@ -61,6 +62,13 @@
                         @else
                             N/A
                         @endif
+                    </td>
+                    <td>
+                        @forelse($project->technologies as $tech)
+                            <span class="badge rounded-pill text-bg-{{ $tech->color }}">{{ $tech->label }}</span>
+                        @empty
+                            N/A
+                        @endforelse
                     </td>
                     <td>
                         <form action="{{ route('admin.projects.toggle', $project) }}" method="POST"
@@ -100,7 +108,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         <h3 class="text-center">Non ci sono progetti da mostrare!</h3>
                     </td>
                 </tr>

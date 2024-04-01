@@ -105,17 +105,17 @@
             <input type="file"
                 class="form-control @error('image') is-invalid @elseif(old('image', '')) is-valid @enderror @if ($project->image) d-none @endif"
                 name="image" id="image" placeholder="Nessun file selezionato">
-        </div>
 
-        @error('image')
-            <div class="invalid-feedback">
-                {{ $message }}
-            </div>
-        @else
-            <div class="form-text">
-                Carica un file immagine
-            </div>
-        @enderror
+            @error('image')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @else
+                <div class="form-text">
+                    Carica un file immagine
+                </div>
+            @enderror
+        </div>
     </div>
     <div class="col-1">
         <div class="mb-3">
@@ -124,16 +124,30 @@
                 id="preview" name="preview">
         </div>
     </div>
-    <div class="col-12 d-flex justify-content-center">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="1" id="is_published" name="is_published"
-                @if (old('is_published', $project->is_published)) checked @endif>
-            <label class="form-check-label" for="is_published">
-                Pubblicato
-            </label>
+    <div class="col-10">
+        <div class="mb-3">
+            @foreach ($technologies as $tech)
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="techs[]" id="{{ "tech-$tech->id" }}"
+                        value="{{ $tech->id }}" @if (in_array($tech->id, old('techs', []))) checked @endif>
+                    <label class="form-check-label" for="{{ "tech-$tech->id" }}">{{ $tech->label }}</label>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    <div class="col-2 d-flex justify-content-end">
+        <div class="mb-3">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" value="1" id="is_published" name="is_published"
+                    @if (old('is_published', $project->is_published)) checked @endif>
+                <label class="form-check-label" for="is_published">
+                    Pubblicato
+                </label>
+            </div>
         </div>
     </div>
 </div>
+
 <div class="d-flex align-items-center justify-content-between">
     <a href="{{ route('admin.projects.index') }}" class="btn btn-secondary">Torna alla lista</a>
 
