@@ -64,7 +64,8 @@ class ProjectController extends Controller
             'content' => 'required|string',
             'image' => 'nullable|image',
             'is_published' => 'nullable|boolean',
-            'type_id' => 'nullable|exists:types,id'
+            'type_id' => 'nullable|exists:types,id',
+            'technologies' => 'nullable|exists:tags,id'
         ],
         [
             'title.required' => 'Il titolo è obbligatorio',
@@ -74,7 +75,8 @@ class ProjectController extends Controller
             'content.required' => 'Il contenuto è obbligatorio',
             'image.image' => 'Il file inserito non è un\'immagine',
             'is_published.boolean' => 'Il valore del campo di pubblicazione non è valido',
-            'type_id.exists' => 'Tipologia non valida o non esistente'
+            'type_id.exists' => 'Tipologia non valida o non esistente',
+            'technologies.exists' => 'Le Tecnologie selezionate non sono valide'
         ]);
 
         $data = $request->all();
@@ -96,6 +98,10 @@ class ProjectController extends Controller
 
         $project->save();
 
+        if(Arr::exists($data, 'technologies')){
+            $project->technologies()->attach($data['technologies']);
+        }
+
         return to_route('admin.projects.show', $project)->with('message','Progetto creato con successo')->with('type', 'success');
     }
 
@@ -112,10 +118,13 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
+        $prev_techs = $project->technologies->pluck('id')->toArray();
+
         $types = Type::select('label', 'id')->get();
         // $types = Type::all();
+        $technologies = Technology::select('label', 'id')->get();
 
-        return view('admin.projects.edit', compact('project', 'types'));
+        return view('admin.projects.edit', compact('project', 'types', 'technologies', 'prev_techs'));
     }
 
     /**
@@ -129,7 +138,8 @@ class ProjectController extends Controller
             'content' => ['required', 'string'],
             'image' => ['nullable', 'image'],
             'is_published' => ['nullable', 'boolean'],
-            'type_id' => ['nullable', 'exists:types,id']
+            'type_id' => ['nullable', 'exists:types,id'],
+            'technologies' => ['nullable', 'exists:tags,id']
         ],
         [
             'title.required' => 'Il titolo è obbligatorio',
@@ -139,8 +149,8 @@ class ProjectController extends Controller
             'content.required' => 'Il contenuto è obbligatorio',
             'image.image' => 'Il file inserito non è un\'immagine',
             'is_published.boolean' => 'Il valore del campo di pubblicazione non è valido',
-            'type_id.exists' => 'Tipologia non valida o non esistente'
-            
+            'type_id.exists' => 'Tipologia non valida o non esistente',
+            'technologies.exists' => 'Le Tecnologie selezionate non sono valide'
         ]);
 
         $data = $request->all();
@@ -158,6 +168,11 @@ class ProjectController extends Controller
         }
 
         $project->update($data);
+
+        if(Arr::exists($data, 'technologies'))
+        $project->technologies()->sync($data['technologies']);
+        elseif(!Arr::exists($data, 'technologies') && $project->has('technologies')) 
+        $project->technologies()->detach();
 
         return to_route('admin.projects.show', $project)->with('message','Progetto modificato con successo')->with('type', 'success');
     }
@@ -192,6 +207,7 @@ class ProjectController extends Controller
     
     public function drop(Project $project){
 
+        if($project->has('technologies')) $project->technologies()->detach();
         if($project->image) Storage::delete($project->image);
         $project->forceDelete();
 
