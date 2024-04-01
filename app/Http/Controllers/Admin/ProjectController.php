@@ -25,27 +25,39 @@ class ProjectController extends Controller
         $type_filter = $request->query('type_filter');
         $tech_filter = $request->query('tech_filter');
 
-        $query = Project::orderByDesc('updated_at')->orderByDesc('created_at');
+        // $query = Project::orderByDesc('updated_at')->orderByDesc('created_at');
+        // $query = Project::query();
 
-        if($publication_filter){
-            $value = $publication_filter === 'published';
-            $query->whereIsPublished($value);
-        }
+        // if($publication_filter){
+        //     $value = $publication_filter === 'published';
+        //     $query->whereIsPublished($value);
+        // }
 
-        if($type_filter){
-            $query->whereTypeId($type_filter);
-        }
+        // if($type_filter){
+        //     $query->whereTypeId($type_filter);
+        // }
 
-        if($tech_filter){
-            $query->whereHas('technologies', function($query) use ($tech_filter){
-                $query->where('technologies.id', $tech_filter);
-            });
-        }
+        // if($tech_filter){
+        //     $query->whereHas('technologies', function($query) use ($tech_filter){
+        //         $query->where('technologies.id', $tech_filter);
+        //     });
+        // }
 
-        $projects = $query->paginate(10)->withQueryString();
+        // $projects = $query->paginate(10)->withQueryString();
 
-        $types = Type::all();
-        $technologies = Technology::all();
+        $projects = Project::public($publication_filter)
+        ->type($type_filter)
+        ->technology($tech_filter)
+        ->orderByDesc('updated_at')
+        ->orderByDesc('created_at')
+        ->paginate(10)
+        ->withQueryString();
+
+        // $types = Type::all();
+        // $technologies = Technology::all();
+
+        $types = Type::withCount('projects')->get();
+        $technologies = Technology::select('id', 'label')->get();
         
         return view('admin.projects.index', compact('projects', 'publication_filter', 'types', 'type_filter', 'technologies', 'tech_filter'));
     }

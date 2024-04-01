@@ -22,14 +22,13 @@
                         @endforeach
                     </select>
                     {{-- filtro tecnologia --}}
-                    <select class="form-select" name="type_filter">
+                    <select class="form-select" name="tech_filter">
                         <option value="">Linguaggi</option>
                         @foreach ($technologies as $tech)
                             <option value="{{ $tech->id }}" @if ($tech_filter == $tech->id) selected @endif>
                                 {{ $tech->label }}</option>
                         @endforeach
                     </select>
-
                     {{-- filtro status --}}
                     <select class="form-select" name="publication_filter">
                         <option value="">Status</option>

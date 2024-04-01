@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\softDeletes;
+use Illuminate\Database\Eloquent\Builder;
 
 class Project extends Model
 {
@@ -34,4 +35,26 @@ class Project extends Model
     public function technologies(){
         return $this->belongsToMany(Technology::class);
     }
+
+    // # Query Scope
+    public function scopePublic(Builder $query, $status)
+    {
+        if(!$status) return $query;
+        $value = $status === 'published';
+        return $query->whereIsPublished($value);
+    }
+
+    public function scopeType(Builder $query, $type_id)
+    {
+        if(!$type_id) return $query;
+        return $query->whereTypeId($type_id);
+    }
+
+    public function scopeTechnology(Builder $query, $technology_id)
+    {
+        if(!$technology_id) return $query;
+        return $query->whereHas('technologies', function($query) use ($technology_id) {$query->where('technologies.id', $technology_id);
+        });
+    }
+
 }
